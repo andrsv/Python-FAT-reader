@@ -13,7 +13,7 @@ class TestFAT16HeaderParser(unittest.TestCase):
 
     def testSectorCount(self):
         myFat = FatVbr.FatVbr(open("FAT16.dd", "rb"),0)
-        self.assertEqual(myFat.sectorCount,262144)
+        self.assertEqual(myFat.sectorCount,34816)
 
     def testFatCount(self):
         myFat = FatVbr.FatVbr(open("FAT16.dd", "rb"),0)
@@ -29,16 +29,16 @@ class TestFAT16HeaderParser(unittest.TestCase):
         self.assertEqual(myFat.posFirstReservedSector,0)
         self.assertEqual(myFat.posLastReservedSector,3)
         self.assertEqual(myFat.posFirstFatSector,4)
-        self.assertEqual(myFat.posLastFatSector,515)
-        self.assertEqual(myFat.posFirstDataSector,516)
-        self.assertEqual(myFat.posFirstRootDirSector,516)
-        self.assertEqual(myFat.posLastRootDirSector,547)
-        self.assertEqual(myFat.posLastDataSector,262143)
-        self.assertEqual(myFat.posLastSector,262143)
+        self.assertEqual(myFat.posLastFatSector,75)
+        self.assertEqual(myFat.posFirstDataSector,76)
+        self.assertEqual(myFat.posFirstRootDirSector,76)
+        self.assertEqual(myFat.posLastRootDirSector,107)
+        self.assertEqual(myFat.posLastDataSector,34815)
+        self.assertEqual(myFat.posLastSector,34815)
         
     def testVolumeID(self):
         myFat = FatVbr.FatVbr(open("FAT16.dd", "rb"),0)
-        self.assertEqual(myFat.volumeID, 0x91f81caf)
+        self.assertEqual(myFat.volumeID, 0x8822b991)
 
     def testVolumeLabel(self):
         myFat = FatVbr.FatVbr(open("FAT16.dd", "rb"),0)

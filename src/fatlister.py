@@ -18,7 +18,7 @@ class Main():
         if createdDateTime != "": 
             createdDateTime = createdDateTime.strftime('%d.%m.%Y %H:%M:%S:%f')
         if self.arguments.filenameOutput:
-            self.outputFile.print(str(id) + "," + path + "," + name + "," + longFilename + "," + allocated + "," + str(size) + "," + accessedDateTime + "," + modifiedDateTime + "," + createdDateTime + "," + str(startingCluster) + ";")
+            self.outputFile.write(str(id) + "," + path + "," + name + "," + longFilename + "," + allocated + "," + str(size) + "," + accessedDateTime + "," + modifiedDateTime + "," + createdDateTime + "," + str(startingCluster) + ";")
         else:
             print(self.printFormatString.format(id,path + longFilename,allocated,str(size)+"b", accessedDateTime,modifiedDateTime,createdDateTime,startingCluster))
     
@@ -67,7 +67,7 @@ class Main():
         fat = Fat.Fat(open(input_filename, "rb"),offset, fatVbr)
     
         if self.arguments.filenameOutput:
-            self.outputFile.print("Id,Path,Name,LFN,Allocated,Size,Accessed,Modified,Created,Starting Cluster;")
+            self.outputFile.write("Id,Path,Name,LFN,Allocated,Size,Accessed,Modified,Created,Starting Cluster;")
         else:
             print(self.printFormatHeader.format("Id","File","Allocated","Size","Accessed","Modified","Created","Starting Cluster"))
         

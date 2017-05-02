@@ -13,14 +13,13 @@ class TestFAT16RootDirectory(unittest.TestCase):
         fatVbr = FatVbr.FatVbr(open("FAT16.dd", "rb"),0)
         fat = Fat.Fat(open("FAT16.dd", "rb"),0, fatVbr)
         rootDir = fat.getRootDirectory()
-        self.assertTrue(rootDir.hasDirectory("test"))
+        self.assertTrue(rootDir.hasDirectory("test1"))
         self.assertFalse(rootDir.hasDirectory("test5"))
 
     def testFilesInRoot(self):
         fatVbr = FatVbr.FatVbr(open("FAT16.dd", "rb"),0)
         fat = Fat.Fat(open("FAT16.dd", "rb"),0, fatVbr)
         rootDir = fat.getRootDirectory()
-        self.assertTrue(rootDir.hasFile("shortFileWithLongFilename.txt"))
         self.assertFalse(rootDir.hasFile("NoSuchFile.txt"))
 
     def testNonRootDir(self):
@@ -30,8 +29,13 @@ class TestFAT16RootDirectory(unittest.TestCase):
         testDirEntry = rootDir.getDirectoryEntry("test2")
         testDir = fat.getDirectory(testDirEntry)
         
-        self.assertTrue(testDir.hasDirectory("test 2.1"))
         self.assertFalse(testDir.hasFile("NoSuchFile"))
+        self.assertTrue(testDir.hasDirectory("test2.1"))
+        
+        test2DirEntry = testDir.getDirectoryEntry("test2.1")
+        test2Dir = fat.getDirectory(test2DirEntry)
+        self.assertTrue(test2Dir.hasFile("bigTextFileWithGarbageData.txt"))
+        
                     
     def testSubSubDir(self):
         fatVbr = FatVbr.FatVbr(open("FAT16.dd", "rb"),0)
@@ -41,7 +45,7 @@ class TestFAT16RootDirectory(unittest.TestCase):
         testDir = fat.getDirectory(testDirEntry)
         for entry in testDir.getAllEntries():
             print (entry)
-        test2DirEntry = testDir.getDirectoryEntry("test 2.1")
+        test2DirEntry = testDir.getDirectoryEntry("test2.1")
         test2Dir = fat.getDirectory(test2DirEntry)
         for entry in test2Dir.getAllEntries():
             print (entry)
