@@ -90,7 +90,7 @@ class Directory:
 
     def getEntry(self, index):
         """Returns the entry at index. Should only be called internally, in case og long filenames present, this function should only be called with the index of the last long filename entry as it will recursively read all relevant entries."""
-        clusterOffset = self.clusterlist[round(index/self.fatVbr.getClusterSize())]*self.fatVbr.getClusterSize()
+        clusterOffset = self.clusterlist[int(round(index/self.fatVbr.getClusterSize()))]*self.fatVbr.getClusterSize()
         indexOffset = (index % 512) * self.fatVbr.getBytesPrRootDirEntry()
         #TODO remove: print("Reading entry: dataoffset: " + str(self.dataOffset) + ", clusteroffset: " + str(clusterOffset) + ", indexOffset: " + str(indexOffset) + ", offset: " + hex(self.dataOffset + clusterOffset + indexOffset))
         if (self.isLongFileNameEntry(index)):
