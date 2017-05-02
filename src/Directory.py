@@ -19,7 +19,7 @@ def getDateTimeFromDosTime(dosDate, dosTime,dosTenthOfSecond):
 def readBitsFromByte(value, startIndex, bitCount):
     """ Reads bitCount number of bits from value, starting at index startIndex"""    
     VARIABLE_BITCOUNT = 16 #For some obscure(?) reason the variables are 28 bytes long, should be 2 bytes=16bit. Therefore I use a constant here instead of sys.sizeof(value)
-    #TODO: Jeg lurer litt på hvorfor denne virker, (value <<startIndex) er jo egentlig feil dersom variabelen faktisk er 28 bytes lang...
+    #TODO: I wonder why this work, (value <<startIndex) this is actually wrong if the variable in fact is 28 bytes long...
     return (value <<startIndex) >> (startIndex + VARIABLE_BITCOUNT - bitCount)
 
 def getNthBit(num, n):
