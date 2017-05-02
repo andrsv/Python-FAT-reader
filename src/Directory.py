@@ -157,7 +157,7 @@ class Directory:
         return self.getFirstByte(index)==0xE5
 
     def getFirstByte(self, index):
-        clusterOffset = self.clusterlist[round(index/self.fatVbr.getClusterSize())]*self.fatVbr.getClusterSize()
+        clusterOffset = self.clusterlist[int(round(index/self.fatVbr.getClusterSize()))]*self.fatVbr.getClusterSize()
         indexOffset = (index % 512) * self.fatVbr.getBytesPrRootDirEntry()
         self.inputFile.seek(self.dataOffset + clusterOffset + indexOffset)
         return struct.unpack_from("<B",self.inputFile.read(1))[0]
