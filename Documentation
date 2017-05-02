@@ -1,0 +1,51 @@
+----------------
+- Installation -
+----------------
+
+Install Python 3.5
+Extract archive to local computer.
+
+------------------------
+- What is this program -
+------------------------
+
+This program prints data regarding an input file. It generates an md5 sum and also it extracts data from the FAT VBR.
+
+I have separated the program into 2 source files located in the src folder.
+
+fsstat_Anders
+This file is the main file to run. It takes 2 parameters, a filename and an optional offset.
+
+FatVbr
+This is a class which handles FAT VBRs. It does not handle anything regarding md5 sums.
+
+-----------------------
+- Program limitations -
+-----------------------
+
+The program is supposed to support all PC- FAT12, FAT16, FAT32 and partly exFAT VBRs.
+For FAT32 partitions, size of root directory is wrongly presented as the root directory size is not stored in the VBR and is not supported. 
+If there are data which the program does not understand, then warnings will be printed on the screen together with the resulting data. 
+
+-----------------------
+- Test of the program -
+-----------------------
+
+The results of the program has been manually compared with results from fsstat from Sleuthkit using 3 image files, 1 FAT16 and 2 FAT32. I have also made unittests which are located in the test folder.
+
+The unit test can be run from any tool which supports running Python unittests (unittest.TestCase). I have used LiClipse). In case you do not have such environment available, I have added code so that the unittests can be ran as standalone scripts. Move the file /src/FatVbr.py to /test and then run the Test_Fat16Vbr.py and Test_Fat32Vbr.py with python3.5
+
+---------
+- Usage -
+---------
+
+fsstat_Anders.py [-h] [-o OFFSET] filename
+
+positional arguments:
+  filename              The file to read FAT header from
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -o OFFSET, --offset OFFSET
+                        The offset in bytes where the FAT header(VBR) is
+                        located
