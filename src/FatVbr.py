@@ -41,7 +41,7 @@ class FatVbr:
         elif (self.oemName == "NTFS    "):
             self.unhandledWarning = True
             self.unhandledWarningMessage += "This module does not support NTFS.\n"
-            ##TODO: read 0x0b 25bytes DOS3.31 BPB NTFS BPB 0x24 - 0x50 +(DWORD)
+            ##TODO: NTFS: read 0x0b 25bytes DOS3.31 BPB NTFS BPB 0x24 - 0x50 +(DWORD)
         
         ## Read Bios Parameter Block (BPB) data for FAT versions since DOS 2.0: 
         ## 2 bytes, bytes per sector
@@ -191,15 +191,19 @@ class FatVbr:
         return self.inputFile
 
     def getDataOffset(self):
+        """ Returns the byte-offset of the first data sector in the file."""
         return self.posFirstDataSector + self.offset
 
     def getSectorsPerCluster(self):
+        """ Returns number of sectors per cluster"""
         return self.sectorsPerCluster
 
     def getBytesPrRootDirEntry(self):
+        """ Returns the size in bytes of a directory entry."""
         return 32 ## Each entry in the Root folder is 32 bytes.
 
     def getRootDirSectorCount(self):
+        """ returns the number of sectors used by the root directory"""
         return math.ceil((self.getBytesPrRootDirEntry() * self.rootDirEntries)/self.sectorSize)
    
     def printHeader(self):

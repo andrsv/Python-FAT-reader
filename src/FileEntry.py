@@ -1,4 +1,5 @@
 class FileEntry:
+    """Dummy class which handles Directory-entries found in directories"""
     def __init__(self):
         self.longFilename = ""
         self.shortFilename = ""
@@ -12,9 +13,6 @@ class FileEntry:
         self.archive = False
         self.entryCount = 1
         self.deleted = False
-
-    def setLongFilename(self,filename):
-        self.longFilename = filename
 
     def addToLongFilename(self,filename):
         self.longFilename += filename

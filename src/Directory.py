@@ -28,7 +28,8 @@ def getNthBit(num, n):
     return (num>>n)&1   
     
 def getStringFromLongFilename(firstChars, secondChars, thirdChars):
-    """ Converts a DOS long filename to String"""   
+    """ Converts a DOS long filename to String"""  
+    #TODO: This is not 100% correct... 
     #lastPos=12
     #for i in range(len(thirdChars)-1,0,-1):
     #    if thirdChars[i] == 0xff:
@@ -62,7 +63,7 @@ class Directory:
     def __init__(self, file, clusterlist, fatVbr, path):
         self.inputFile = file
         self.clusterlist = clusterlist
-        self.dataOffset = (fatVbr.getDataOffset() + fatVbr.getRootDirSectorCount()-8) * fatVbr.getSectorSize() #TODO: Jeg blir sprø!!! Hvorfor -4??
+        self.dataOffset = (fatVbr.getDataOffset() + fatVbr.getRootDirSectorCount()- 2 * fatVbr.getSectorsPerCluster()) * fatVbr.getSectorSize()
         self.fatVbr = fatVbr
         self.entries = []
         self.path = path
@@ -80,14 +81,6 @@ class Directory:
             fileEntry = self.getEntry(index)
             self.entries.append(fileEntry)
             index+=fileEntry.getEntryCount()
-                
-            
-            #print ("Finished reading: " + self.path + fileEntry.getLongFilename()) #TODO: remove this
-            #if fileEntry.isDirectory():
-            #    print("It was a directory")
-            #else:
-            #    print("It was a file")
-            #print();
 
     def getEntry(self, index):
         """Returns the entry at index. Should only be called internally, in case og long filenames present, this function should only be called with the index of the last long filename entry as it will recursively read all relevant entries."""
@@ -97,15 +90,15 @@ class Directory:
         if (self.isLongFileNameEntry(index)):
             self.inputFile.seek(self.dataOffset + clusterOffset + indexOffset)
             (entryOrder, firstChars, attributes, longEntryType, checksum, secondChars, alwaysZero, thirdChars) = struct.unpack_from("<B10sBBB12sH4s",self.inputFile.read(32))
-            #TODO: Should check that longEntryType==0 to see if this is in fact a LongDir entry. is not 0, then do nothing.
-            #TODO: Should check checksum and verify... 
-            if sys.version_info.major<3:
-                firstChars = bytearray(firstChars)
-                secondChars = bytearray(secondChars)
-                thirdChars = bytearray(thirdChars)
-            fileEntry = self.getEntry(index+1)
-            fileEntry.addToLongFilename(getStringFromLongFilename(firstChars,secondChars, thirdChars))
-            fileEntry.addEntryCount()
+            if longEntryType==0: # longEntryType always has longEntryType==0.
+                #TODO: Should check checksum and verify... 
+                if sys.version_info.major<3:
+                    firstChars = bytearray(firstChars)
+                    secondChars = bytearray(secondChars)
+                    thirdChars = bytearray(thirdChars)
+                fileEntry = self.getEntry(index+1)
+                fileEntry.addToLongFilename(getStringFromLongFilename(firstChars,secondChars, thirdChars))
+                fileEntry.addEntryCount()
             return fileEntry    
         else:
             fileEntry = FileEntry.FileEntry()
@@ -154,33 +147,40 @@ class Directory:
         raise ValueError("Can't find directory + " + self.path + filename)
 
     def hasFile(self, filename):
+        """ Checks if the filename is present within this directory"""
         for fileEntry in self.entries:
             if (not fileEntry.isDirectory() and fileEntry.getLongFilename() == filename):
                 return True
         return False;
 
     def isDirEntry(self, index):
+        """ When all directory entries have been read, the next one will start with 0x00 which is not an entry. This code checks if first byte of the entry is 0x00."""
         return self.getFirstByte(index)!=0
 
     def isLongFileNameEntry(self, index):
+        """ In long filename entries, the Attribute-byte will be 0x0F. This functions checks if the attribute byte is 0x0F""" 
         return self.getAttributeByte(index)==0x0F
 
     def isDeletedEntry(self, index):
+        """ When records are deleted, the first byte will be 0xE5. This code checks if the first byte is 0xE5"""
         return self.getFirstByte(index)==0xE5
 
     def getFirstByte(self, index):
+        """ Returns the first byte of the directory-entry at a specified index of the directory. The function Multiplies index by 32 to get the file-position"""
         clusterOffset = self.clusterlist[int(round(index/self.fatVbr.getClusterSize()))]*self.fatVbr.getClusterSize()
         indexOffset = (index % 512) * self.fatVbr.getBytesPrRootDirEntry()
         self.inputFile.seek(self.dataOffset + clusterOffset + indexOffset)
         return struct.unpack_from("<B",self.inputFile.read(1))[0]
         
     def getAttributeByte(self, index):
+        """ Returns the attribute byte of the directory-entry at a specified index of the directory. The function Multiplies index by 32 to get the file-position"""
         clusterOffset = self.clusterlist[int(round(index/self.fatVbr.getClusterSize()))]*self.fatVbr.getClusterSize()
         indexOffset = (index % 512) * self.fatVbr.getBytesPrRootDirEntry()
         self.inputFile.seek(self.dataOffset + clusterOffset + indexOffset+11)
         return struct.unpack_from("<B",self.inputFile.read(1))[0]
 
     def getDirEntries(self):
+        """ Returns all the entries for directories in current directory."""
         dirEntries = []
         for fileEntry in self.entries:
             if (fileEntry.isDirectory()):
@@ -188,6 +188,7 @@ class Directory:
         return dirEntries
         
     def getFileEntries(self):
+        """ Returns all the entries for file in current directory."""
         fileEntries = []
         for fileEntry in self.entries:
             if not fileEntry.isDirectory():
@@ -195,8 +196,10 @@ class Directory:
         return fileEntries
         
     def getAllEntries(self):
+        """ Returns all the entries in current directory."""
         return self.entries
     
     def getPath(self):
+        """ Returns the parent-path for current directory."""
         return self.path
         

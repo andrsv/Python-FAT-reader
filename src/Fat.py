@@ -2,7 +2,7 @@ import struct
 import Directory
 
 class Fat():
-    
+    """This class handles the File Allocation Table for FAT16 File Systems."""
     def __init__(self, file, offset, fatVbr):
         self.fatVbr = fatVbr
         self.fatStartOffset = offset + fatVbr.posFirstFatSector * fatVbr.sectorSize
@@ -10,7 +10,8 @@ class Fat():
         self.FatVbr = fatVbr
         
         
-    def getNextSector(self, index): 
+    def getNextSector(self, index):
+        """ Returns the offset of the next sector from the FAT table.""" 
         if (self.fatVbr.fatType == "FAT16"):
             indexOffset = index * 2; # *2 as it is FAT16 (16 bits = 2 bytes) 
             self.file.seek(self.fatStartOffset + indexOffset)
@@ -18,6 +19,7 @@ class Fat():
             return nextSector
 
     def getDirectory(self,directoryEntry):
+        """ Returns a Directory instance from a FileEntry."""
         currentCluster = directoryEntry.getFirstCluster()
         clusterList = [currentCluster]
         while(self.getNextSector(currentCluster)<0xfff8):
@@ -28,6 +30,7 @@ class Fat():
         return Directory.Directory(self.file, clusterList, self.fatVbr, directoryEntry.getPath() + directoryEntry.getLongFilename() + "/")
 
     def getRootDirectory(self):
+        """ Returns the root directory"""
         clusterList = [] #which clusters contains the Directory-data?
         clustersCount = self.fatVbr.getRootDirSectorCount() / self.fatVbr.getSectorsPerCluster()
         for x in range(int(-clustersCount)+2, 2): # +2 as two first values of FAT is reserved
