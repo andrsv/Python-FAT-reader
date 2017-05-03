@@ -4,6 +4,7 @@
 import struct
 import FileEntry
 import datetime
+import sys
 
 def getDateTimeFromDosTime(dosDate, dosTime,dosTenthOfSecond):
     """ reads a dos/fat time and returns a datetime.datetime object."""
@@ -98,6 +99,10 @@ class Directory:
             (entryOrder, firstChars, attributes, longEntryType, checksum, secondChars, alwaysZero, thirdChars) = struct.unpack_from("<B10sBBB12sH4s",self.inputFile.read(32))
             #TODO: Should check that longEntryType==0 to see if this is in fact a LongDir entry. is not 0, then do nothing.
             #TODO: Should check checksum and verify... 
+            if sys.version_info.major<3:
+                firstChars = bytearray(firstChars)
+                secondChars = bytearray(secondChars)
+                thirdChars = bytearray(thirdChars)
             fileEntry = self.getEntry(index+1)
             fileEntry.addToLongFilename(getStringFromLongFilename(firstChars,secondChars, thirdChars))
             fileEntry.addEntryCount()
@@ -140,6 +145,13 @@ class Directory:
             if (fileEntry.isDirectory() and fileEntry.getLongFilename() == directoryname):
                 return fileEntry
         raise ValueError("Can't find directory + " + self.path + directoryname)
+
+    def getFileEntry(self, filename):
+        """Returns a fileEntry to a directory with name directoryname""" 
+        for fileEntry in self.entries:
+            if (not fileEntry.isDirectory() and fileEntry.getLongFilename() == filename):
+                return fileEntry
+        raise ValueError("Can't find directory + " + self.path + filename)
 
     def hasFile(self, filename):
         for fileEntry in self.entries:
