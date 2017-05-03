@@ -63,7 +63,7 @@ class Directory:
     def __init__(self, file, clusterlist, fatVbr, path):
         self.inputFile = file
         self.clusterlist = clusterlist
-        self.dataOffset = (fatVbr.getDataOffset() + fatVbr.getRootDirSectorCount()- 2 * fatVbr.getSectorsPerCluster()) * fatVbr.getSectorSize()
+        self.dataOffset = fatVbr.getDataOffsetInBytes() + (fatVbr.getRootDirSectorCount()- 2 * fatVbr.getSectorsPerCluster()) * fatVbr.getSectorSize()
         self.fatVbr = fatVbr
         self.entries = []
         self.path = path

@@ -190,9 +190,9 @@ class FatVbr:
         """Returns the image file opened as readable"""
         return self.inputFile
 
-    def getDataOffset(self):
-        """ Returns the byte-offset of the first data sector in the file."""
-        return self.posFirstDataSector + self.offset
+    def getDataOffsetInBytes(self):
+        """ Returns the byte-offset of the first data sector relative to the start of the file."""
+        return self.posFirstDataSector * self.getSectorSize() + self.offset
 
     def getSectorsPerCluster(self):
         """ Returns number of sectors per cluster"""
