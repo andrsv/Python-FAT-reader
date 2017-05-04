@@ -84,11 +84,9 @@ class Directory:
 
     def getEntry(self, index):
         """Returns the entry at index. Should only be called internally, in case og long filenames present, this function should only be called with the index of the last long filename entry as it will recursively read all relevant entries."""
-        clusterOffset = self.clusterlist[int(round(index/self.fatVbr.getClusterSize()))]*self.fatVbr.getClusterSize()
-        indexOffset = (index % 512) * self.fatVbr.getBytesPrRootDirEntry()
         #TODO remove: print("Reading entry: dataoffset: " + str(self.dataOffset) + ", clusteroffset: " + str(clusterOffset) + ", indexOffset: " + str(indexOffset) + ", offset: " + hex(self.dataOffset + clusterOffset + indexOffset))
         if (self.isLongFileNameEntry(index)):
-            self.inputFile.seek(self.dataOffset + clusterOffset + indexOffset)
+            self.inputFile.seek(self.getOffset(index))
             (entryOrder, firstChars, attributes, longEntryType, checksum, secondChars, alwaysZero, thirdChars) = struct.unpack_from("<B10sBBB12sH4s",self.inputFile.read(32))
             if longEntryType==0: # longEntryType always has longEntryType==0.
                 #TODO: Should check checksum and verify... 
@@ -102,7 +100,7 @@ class Directory:
             return fileEntry    
         else:
             fileEntry = FileEntry.FileEntry()
-            self.inputFile.seek(self.dataOffset + clusterOffset + indexOffset)
+            self.inputFile.seek(self.getOffset(index))
             (shortFilenameTemp,shortExtensionTemp,attributes,reserved,creationTenthOfSeconds,creationTime,creationDate, lastAccessedDate, notUsedForFat16, lastModificationTime, lastModificationDate, firstClusterNumber, fileSize) = struct.unpack_from("<8s3sBBBHHHHHHHL",self.inputFile.read(32))
             fileEntry.setDeleted(self.isDeletedEntry(index))
             if self.isDeletedEntry(index):
@@ -122,7 +120,7 @@ class Directory:
             fileEntry.setFirstCluster(firstClusterNumber)
             fileEntry.setFileSize(fileSize)
             fileEntry.setPath(self.path)
-            fileEntry.setId(self.dataOffset + clusterOffset + indexOffset)
+            fileEntry.setId(self.getOffset(index))
             return fileEntry
 
     def hasDirectory(self, directoryname):
@@ -167,16 +165,18 @@ class Directory:
 
     def getFirstByte(self, index):
         """ Returns the first byte of the directory-entry at a specified index of the directory. The function Multiplies index by 32 to get the file-position"""
-        clusterOffset = self.clusterlist[int(round(index/self.fatVbr.getClusterSize()))]*self.fatVbr.getClusterSize()
-        indexOffset = (index % 512) * self.fatVbr.getBytesPrRootDirEntry()
-        self.inputFile.seek(self.dataOffset + clusterOffset + indexOffset)
+        self.inputFile.seek(self.getOffset(index))
         return struct.unpack_from("<B",self.inputFile.read(1))[0]
+    
+    def getOffset(self, index):
+        clusterIndex = int(index/self.fatVbr.getEntriesPerCluster())
+        clusterOffset = self.clusterlist[clusterIndex]*self.fatVbr.getClusterSize()
+        indexOffset = (index % self.fatVbr.getEntriesPerCluster()) * self.fatVbr.getBytesPrRootDirEntry()
+        return int(round(self.dataOffset + clusterOffset + indexOffset))
         
     def getAttributeByte(self, index):
         """ Returns the attribute byte of the directory-entry at a specified index of the directory. The function Multiplies index by 32 to get the file-position"""
-        clusterOffset = self.clusterlist[int(round(index/self.fatVbr.getClusterSize()))]*self.fatVbr.getClusterSize()
-        indexOffset = (index % 512) * self.fatVbr.getBytesPrRootDirEntry()
-        self.inputFile.seek(self.dataOffset + clusterOffset + indexOffset+11)
+        self.inputFile.seek(self.getOffset(index)+11)
         return struct.unpack_from("<B",self.inputFile.read(1))[0]
 
     def getDirEntries(self):

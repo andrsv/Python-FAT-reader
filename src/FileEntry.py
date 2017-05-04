@@ -48,13 +48,16 @@ class FileEntry:
         self.deleted = deleted
 
     def getShortFilename(self):
-        return self.shortFilename
+        return self.shortFilename.strip()
 
     def getShortExtension(self):
-        return self.shortExtension
+        return self.shortExtension.strip()
 
     def getFullShortname(self):
-        return self.shortFilename + "." + self.shortExtension
+        if len(self.getShortExtension())>0:
+            return self.getShortFilename() + "." + self.getShortExtension()
+        else:
+            return self.getShortFilename()
 
     def isReadOnly(self):
         return self.readOnly
@@ -124,7 +127,13 @@ class FileEntry:
 
     def getId(self):
         return self.id;
-
+    
+    def getFileName(self):
+        if len(self.longFilename)>0:
+            return self.longFilename
+        else:
+            return self.getFullShortname()
+            
     def __str__(self):
         output = "-----------------"
         output +="\nPath: " + self.path

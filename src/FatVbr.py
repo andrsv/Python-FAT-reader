@@ -201,7 +201,11 @@ class FatVbr:
     def getBytesPrRootDirEntry(self):
         """ Returns the size in bytes of a directory entry."""
         return 32 ## Each entry in the Root folder is 32 bytes.
-
+    
+    def getEntriesPerCluster(self):
+        """ Returns the number of possible directory-entries per cluster """
+        return self.getClusterSize() / self.getBytesPrRootDirEntry()
+    
     def getRootDirSectorCount(self):
         """ returns the number of sectors used by the root directory"""
         return math.ceil((self.getBytesPrRootDirEntry() * self.rootDirEntries)/self.sectorSize)

@@ -48,6 +48,12 @@ class TestFAT16RootDirectory(unittest.TestCase):
         
         self.assertFalse(testDir.hasFile("NoSuchFile"))
                     
+    def testLargeAmountOfFilesInDirectory(self):
+        rootDir = self.fat.getRootDirectory()
+        testDirEntry = rootDir.getDirectoryEntry("test1")
+        testDir = self.fat.getDirectory(testDirEntry)
+        testDirEntries = testDir.getAllEntries()
+        self.assertEqual(len(testDirEntries), 138) 
 
 if __name__ == '__main__':
     unittest.main()

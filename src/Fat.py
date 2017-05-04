@@ -27,7 +27,7 @@ class Fat():
                 raise Exception("Tried to read a cluster marked as bad, cluster: " + currentCluster)
             currentCluster=self.getNextSector(currentCluster)
             clusterList.append(currentCluster)
-        return Directory.Directory(self.file, clusterList, self.fatVbr, directoryEntry.getPath() + directoryEntry.getLongFilename() + "/")
+        return Directory.Directory(self.file, clusterList, self.fatVbr, directoryEntry.getPath() + directoryEntry.getFileName() + "/")
 
     def getRootDirectory(self):
         """ Returns the root directory"""

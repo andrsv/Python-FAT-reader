@@ -5,12 +5,15 @@ import Fat
 
 class Main():
     
-    def printString(self,id,path,name,longFilename,deleted,size, accessedDateTime,modifiedDateTime,createdDateTime,startingCluster):
+    def printString(self, entry):
         """Prints a directory-entry to file/standard output"""
-        if deleted:
+        if entry.isDeleted():
             allocated = "deleted"
         else:
             allocated = "allocated"
+        accessedDateTime = entry.getAccessedDateTime()
+        modifiedDateTime = entry.getModifiedDateTime()
+        createdDateTime = entry.getCreationDateTime()
         if accessedDateTime != "": 
             accessedDateTime = accessedDateTime.strftime('%d.%m.%Y')
         if modifiedDateTime != "": 
@@ -18,18 +21,18 @@ class Main():
         if createdDateTime != "": 
             createdDateTime = createdDateTime.strftime('%d.%m.%Y %H:%M:%S:%f')
         if self.arguments.filenameOutput:
-            self.outputFile.write(str(id) + "," + path + "," + name + "," + longFilename + "," + allocated + "," + str(size) + "," + accessedDateTime + "," + modifiedDateTime + "," + createdDateTime + "," + str(startingCluster) + ";")
+            self.outputFile.write(str(entry.getId()) + "," + entry.getPath() + "," + entry.getFullShortname() + "," + entry.getLongFilename() + "," + allocated + "," + str(entry.getFileSize()) + "," + accessedDateTime + "," + modifiedDateTime + "," + createdDateTime + "," + str(entry.getFirstCluster()) + ";\n")
         else:
-            print(self.printFormatString.format(id,path + longFilename,allocated,str(size)+"b", accessedDateTime,modifiedDateTime,createdDateTime,startingCluster))
+            print(self.printFormatString.format(entry.getId(),entry.getPath() + entry.getFileName(),allocated,str(entry.getFileSize())+"b", accessedDateTime,modifiedDateTime,createdDateTime,entry.getFirstCluster()))
     
     def writeDirToFile(self,directory, fat):#file, clusterList, fatVbr, path, fat):
         """Recursively writes directory-entries to file/standard output"""
         for entry in directory.getAllEntries():
             if not entry.isDirectory():
-                self.printString(entry.getId(), entry.getPath(), entry.getShortFilename(), entry.getLongFilename(), entry.isDeleted(), entry.getFileSize(), entry.getAccessedDateTime(), entry.getModifiedDateTime(), entry.getCreationDateTime(), entry.getFirstCluster())
-            if entry.isDirectory() and entry.getShortFilename().strip() != "." and entry.getShortFilename().strip() != "..":
+                self.printString(entry)
+            if entry.isDirectory() and entry.getShortFilename() != "." and entry.getShortFilename() != "..":
                 if self.showDirectories:
-                    self.printString(entry.getId(), entry.getPath(), entry.getShortFilename(), entry.getLongFilename(), entry.isDeleted(), entry.getFileSize(), entry.getAccessedDateTime(), entry.getModifiedDateTime(), entry.getCreationDateTime(), entry.getFirstCluster())
+                    self.printString(entry)
                 if not entry.isDeleted():    
                     self.writeDirToFile(fat.getDirectory(entry), fat)    
     
@@ -58,7 +61,7 @@ class Main():
             self.showDirectories=True
     
         if self.arguments.filenameOutput:
-            self.outputFile=open(self.arguments.filenameOutput,"w")
+            self.outputFile=self.arguments.filenameOutput
             
         #Prepare the FAT Volume Boot Record
         fatVbr = FatVbr.FatVbr(open(input_filename, "rb"),offset)
@@ -67,13 +70,16 @@ class Main():
         fat = Fat.Fat(open(input_filename, "rb"),offset, fatVbr)
     
         if self.arguments.filenameOutput:
-            self.outputFile.write("Id,Path,Name,LFN,Allocated,Size,Accessed,Modified,Created,Starting Cluster;")
+            self.outputFile.write("Id,Path,Name,LFN,Allocated,Size,Accessed,Modified,Created,Starting Cluster;\n")
         else:
             print(self.printFormatHeader.format("Id","File","Allocated","Size","Accessed","Modified","Created","Starting Cluster"))
         
         rootDir = fat.getRootDirectory()
         if self.showDirectories:
-            self.printString(0, "", "/", "/", False, 0, "", "", "", rootDir.clusterlist[0])
+            if self.arguments.filenameOutput:
+                self.outputFile.write("0,[root directory],,,allocated,0,,,," + str(rootDir.clusterlist[0]) + ";\n")
+            else:
+                print(self.printFormatString.format(0,"[root directory]","allocated","0b", "", "", "",rootDir.clusterlist[0]))
         #recursively write everything under root to File
         self.writeDirToFile(rootDir, fat)
 
