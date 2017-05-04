@@ -8,20 +8,18 @@ import sys
 
 def getDateTimeFromDosTime(dosDate, dosTime,dosTenthOfSecond):
     """ reads a dos/fat time and returns a datetime.datetime object."""
-    creationYear = readBitsFromByte(dosDate, 0, 7) + 1980
-    creationMonth = readBitsFromByte(dosDate, 7, 4)
-    creationDay = readBitsFromByte(dosDate, 11, 5)
-    creationHour = readBitsFromByte(dosTime, 0, 5)
-    creationMinute = readBitsFromByte(dosTime, 5, 6)
-    creationSecond = int(readBitsFromByte(dosTime, 11, 5)*2 + dosTenthOfSecond / 100)
+    creationYear = readBitsFromByte(dosDate, 16, 7) + 1980
+    creationMonth = readBitsFromByte(dosDate, 9, 4)
+    creationDay = readBitsFromByte(dosDate, 5, 5)
+    creationHour = readBitsFromByte(dosTime, 16, 5)
+    creationMinute = readBitsFromByte(dosTime, 11, 6)
+    creationSecond = int(readBitsFromByte(dosTime, 5, 5)*2 + dosTenthOfSecond / 100)
     creationMicroSecond = (dosTenthOfSecond % 100) * 10000
     return datetime.datetime(creationYear, creationMonth, creationDay, creationHour, creationMinute, creationSecond, creationMicroSecond)
 
 def readBitsFromByte(value, startIndex, bitCount):
-    """ Reads bitCount number of bits from value, starting at index startIndex"""    
-    VARIABLE_BITCOUNT = 16 #For some obscure(?) reason the variables are 28 bytes long, should be 2 bytes=16bit. Therefore I use a constant here instead of sys.sizeof(value)
-    #TODO: I wonder why this work, (value <<startIndex) this is actually wrong if the variable in fact is 28 bytes long...
-    return (value <<startIndex) >> (startIndex + VARIABLE_BITCOUNT - bitCount)
+    """ Reads bitCount number of bits from value, starting at bit number *startIndex* (from right)"""    
+    return (value & (2**startIndex -1)) >> (startIndex - bitCount)
 
 def getNthBit(num, n):
     """ Returns the n'th bit in num"""   

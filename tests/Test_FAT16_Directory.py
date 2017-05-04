@@ -11,7 +11,13 @@ class TestFAT16RootDirectory(unittest.TestCase):
         FAT16filename = testsPath+"/FAT16.dd"
         self.fatVbr = FatVbr.FatVbr(open(FAT16filename, "rb"),0)
         self.fat = Fat.Fat(open(FAT16filename, "rb"),0, self.fatVbr)
-        
+
+    def testGetDateTimeFromDosTime(self):
+        creationDate = 0b0100101010100010
+        creationTime = 0b0110001010110111
+        creationTenthOfSeconds = 0b11000111
+        self.assertEqual(Directory.getDateTimeFromDosTime(creationDate, creationTime, creationTenthOfSeconds).strftime('%d.%m.%Y %H:%M:%S:%f') ,"02.05.2017 12:21:47:990000")
+
     def testGetStringFromLongFilename(self):
         testString = Directory.getStringFromLongFilename([0x74,0x00,0x65,0x00,0x73,0x00,0x74,0x00,0x00,0x00],[0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff],[0xff,0xff,0xff,0xff])
         self.assertEqual("test", testString)
