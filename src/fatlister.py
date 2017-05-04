@@ -2,6 +2,7 @@
 import argparse
 import FatVbr
 import Fat
+import os
 
 class Main():
     
@@ -50,6 +51,14 @@ class Main():
         self.arguments = parser.parse_args()
         
         input_filename = self.arguments.filenameImage
+        
+        if not os.path.exists(input_filename):
+            print ("Input file: " + input_filename + " does not exist.")
+            exit()
+        
+        if not os.access(input_filename, os.R_OK):
+            print ("You do not have access to read input file: " + input_filename + ".")
+            exit()
         
         # Initialize offset
         offset = 0;
