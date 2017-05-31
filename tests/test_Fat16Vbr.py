@@ -2,7 +2,7 @@ import unittest
 import FatVbr
 import os
 
-class TestFAT16HeaderParser(unittest.TestCase):
+class testFAT16HeaderParser(unittest.TestCase):
     
     def setUp(self):
         testsPath = os.path.dirname(os.path.abspath(__file__))

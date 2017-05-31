@@ -4,7 +4,7 @@ import FatVbr
 import Fat
 import os
 
-class TestFAT16RootDirectory(unittest.TestCase):
+class testFAT16RootDirectory(unittest.TestCase):
 
     def setUp(self):
         testsPath = os.path.dirname(os.path.abspath(__file__))

@@ -3,7 +3,7 @@ import Fat
 import FatVbr
 import os
 
-class TestFAT16FileAllocationTable(unittest.TestCase):
+class testFAT16FileAllocationTable(unittest.TestCase):
     
     def testGetFatValue(self):
         testsPath = os.path.dirname(os.path.abspath(__file__))
