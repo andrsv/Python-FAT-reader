@@ -74,7 +74,19 @@ class Main():
             
         #Prepare the FAT Volume Boot Record
         fatVbr = FatVbr.FatVbr(open(input_filename, "rb"),offset)
-        
+
+        #Check that the VBR does not contain errors/warnings
+        if (fatVbr.getFatType()!="FAT16"):
+            fatVbr.printHeader()
+            print("This FAT(" + fatVbr.getFatType() + "?) is not supported. Only FAT16 systems are supported.")
+            exit()
+        if (fatVbr.hasWarnings() or fatVbr.isInvalid()):
+            print(fatVbr.getWarningsAsString())
+            print(fatVbr)
+            confirm = input("There is something wrong with the Vbr. Do you wish to continue (y/n)?")
+            if confirm.upper()!="Y":
+                exit()
+
         #Prepare the Fat File Allocation Table
         fat = Fat.Fat(open(input_filename, "rb"),offset, fatVbr)
     
@@ -96,5 +108,3 @@ class Main():
 if __name__ == "__main__":
     main = Main()
     main.run()
-    
-    
