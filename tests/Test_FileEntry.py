@@ -27,7 +27,4 @@ class TestFAT16RootDirectory(unittest.TestCase):
 
         bigTextFile = test2Dir.getFileEntry("bigTextFileWithGarbageData.txt")
         self.assertEqual(bigTextFile.getModifiedDateTime().strftime('%d.%m.%Y %H:%M:%S') ,"02.05.2017 12:21:50")
-                    
-
-if __name__ == '__main__':
-    unittest.main()
+      

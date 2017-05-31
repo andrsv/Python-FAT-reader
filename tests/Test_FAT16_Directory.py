@@ -60,6 +60,3 @@ class TestFAT16RootDirectory(unittest.TestCase):
         testDir = self.fat.getDirectory(testDirEntry)
         testDirEntries = testDir.getAllEntries()
         self.assertEqual(len(testDirEntries), 138) 
-
-if __name__ == '__main__':
-    unittest.main()

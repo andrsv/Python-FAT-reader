@@ -11,6 +11,3 @@ class TestFAT16FileAllocationTable(unittest.TestCase):
         myFatVbr = FatVbr.FatVbr(open(FAT16filename, "rb"),0)
         myFat = Fat.Fat(open(FAT16filename, "rb"),0, myFatVbr)
         self.assertEqual(myFat.getNextSector(3),20)
-
-if __name__ == '__main__':
-    unittest.main()

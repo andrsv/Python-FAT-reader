@@ -53,6 +53,3 @@ class TestFAT16HeaderParser(unittest.TestCase):
 
     def testExtendedBootSignature(self):
         self.assertEqual(self.fatVbr.extendedBootSignature,0x29)
-
-if __name__ == '__main__':
-    unittest.main()
