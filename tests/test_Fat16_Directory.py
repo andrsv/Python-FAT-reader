@@ -1,7 +1,7 @@
+#!/usr/bin/env python3
+from context import FAT
 import unittest
-import Directory
-import FatVbr
-import Fat
+from FAT import Directory, FatVbr, Fat
 import os
 
 class testFAT16RootDirectory(unittest.TestCase):

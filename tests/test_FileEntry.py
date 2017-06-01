@@ -1,8 +1,7 @@
-import unittest
-import Directory
-import FatVbr
-import Fat
-import os
+import unittest, os
+
+from context import FAT
+from FAT import Directory, FatVbr, Fat
 
 class testFAT16RootDirectory(unittest.TestCase):
 

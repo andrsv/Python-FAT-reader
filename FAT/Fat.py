@@ -1,5 +1,5 @@
 import struct
-import Directory
+from FAT import Directory
 
 class Fat():
     """This class handles the File Allocation Table for FAT16 File Systems."""

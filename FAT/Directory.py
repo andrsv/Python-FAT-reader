@@ -2,7 +2,7 @@
 # coding: utf-8
 
 import struct
-import FileEntry
+from FAT import FileEntry
 import datetime
 import sys
 

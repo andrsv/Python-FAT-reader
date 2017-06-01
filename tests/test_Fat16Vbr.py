@@ -1,5 +1,6 @@
 import unittest
-import FatVbr
+from context import FAT
+from FAT import FatVbr
 import os
 
 class testFAT16HeaderParser(unittest.TestCase):

@@ -1,7 +1,6 @@
-import unittest
-import Fat
-import FatVbr
-import os
+import unittest, os
+from context import FAT
+from FAT import Fat, FatVbr
 
 class testFAT16FileAllocationTable(unittest.TestCase):
     
