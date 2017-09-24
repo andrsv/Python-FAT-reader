@@ -1,6 +1,6 @@
 #!/usr/bin/python3.5
 import argparse
-import FatVbr
+from FAT import FatVbr
 import os
 import hashlib
 

@@ -31,7 +31,7 @@ class FatTable():
 
     def getRootDirectory(self):
         """ Returns the root directory"""
-        clusterList = [] #which clusters contains the Directory-data?
+        clusterList = [] #Tells which clusters contains the Directory-data. populated below
         clustersCount = self.fatVbr.getRootDirSectorCount() / self.fatVbr.getSectorsPerCluster()
         for x in range(int(-clustersCount)+2, 2): # +2 as two first values of FAT is reserved
             clusterList.append(x)
