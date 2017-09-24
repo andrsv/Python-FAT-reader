@@ -1,11 +1,10 @@
 #!/usr/bin/python3.5
 import argparse
-import FatVbr
-import Fat
+from FAT import FatVbr
+from FAT import FatTable
 import os
 
 class Main():
-    
     def printString(self, entry):
         """Prints a directory-entry to file/standard output"""
         if entry.isDeleted():
@@ -39,8 +38,8 @@ class Main():
     
     def run(self):
         """Prints the files from a FAT16 filesystem to a file or standard output. -h for help."""
-        self.printFormatHeader = "{:^10}{:^40}{:^10}{:^12}{:^14}{:^22}{:^27}{:^16}"
-        self.printFormatString = "{:^10}{:<40}{:^10}{:>12}{:^14}{:^22}{:^27}{:^16}"
+        self.printFormatHeader = "{:^10}{:^75}{:^10}{:^12}{:^14}{:^22}{:^27}{:^16}"
+        self.printFormatString = "{:^10}{:<75}{:^10}{:>12}{:^14}{:^22}{:^27}{:^16}"
         ## Read command line arguments
         parser = argparse.ArgumentParser()
         parser.add_argument("filenameImage", help="The imagefile to read filelist from (dd-image)")
@@ -88,7 +87,7 @@ class Main():
                 exit()
 
         #Prepare the Fat File Allocation Table
-        fat = Fat.Fat(open(input_filename, "rb"),offset, fatVbr)
+        fat = FatTable.FatTable(open(input_filename, "rb"),offset, fatVbr)
     
         if self.arguments.filenameOutput:
             self.outputFile.write("Id,Path,Name,LFN,Allocated,Size,Accessed,Modified,Created,Starting Cluster;\n")

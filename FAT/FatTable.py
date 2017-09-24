@@ -1,7 +1,7 @@
 import struct
 from FAT import Directory
 
-class Fat():
+class FatTable():
     """This class handles the File Allocation Table for FAT16 File Systems."""
     def __init__(self, file, offset, fatVbr):
         self.fatVbr = fatVbr
