@@ -4,7 +4,7 @@ from FAT import Fat, FatVbr
 
 class testFAT16FileAllocationTable(unittest.TestCase):
     
-    def testGetFatValue(self):
+    def testGetFatTableValue(self):
         testsPath = os.path.dirname(os.path.abspath(__file__))
         FAT16filename = testsPath+"/FAT16.dd"
         myFatVbr = FatVbr.FatVbr(open(FAT16filename, "rb"),0)

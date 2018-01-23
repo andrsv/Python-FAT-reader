@@ -27,23 +27,7 @@ def getNthBit(num, n):
     
 def getStringFromLongFilename(firstChars, secondChars, thirdChars):
     """ Converts a DOS long filename to String"""  
-    #TODO: This is not 100% correct... 
-    #lastPos=12
-    #for i in range(len(thirdChars)-1,0,-1):
-    #    if thirdChars[i] == 0xff:
-    #        lastPos=11+i
-    #for i in range(len(secondChars)-1,0,-1):
-    #    if secondChars[i] == 0xff:
-    #        lastPos=5+i
-    #for i in range(len(firstChars)-1,0,-1):
-    #    if firstChars[i] == 0xff:
-    #        lastPos=i
-    #firstChars.strip(chr(0xff))
-    #secondChars.strip(0xff)
-    #thirdChars.strip(0xff)
-    #longFilename = firstChars.decode("utf-8") + secondChars.decode("utf-8") + thirdChars.decode("utf-8")            
-    #longFilename = firstChars.decode("utf-8")  
-    #Stupid thing, didn't find the correct way to convert this... Cheating....
+    #TODO: This is not 100% correct... .
     filename = ""
     for i in range(0, len(firstChars)-1,2):
         if firstChars[i] != 0xff and firstChars[i] != 0x00:
@@ -67,7 +51,7 @@ class Directory:
         self.path = path
         self.readAllEntries()
 
-    #TODO: I should put a getNextClusterdata() in Fat class. Then I would not need this code here.
+    #TODO: I should put a getNextClusterdata() in FatTable class. Then I would not need this code here.
     def isEmpty(self):
         """Checks if the directory is of size 0"""
         return self.clusterlist[0]==0 #It seems like first cluster is set to 0 when fileSize is 0.
@@ -82,7 +66,6 @@ class Directory:
 
     def getEntry(self, index):
         """Returns the entry at index. Should only be called internally, in case og long filenames present, this function should only be called with the index of the last long filename entry as it will recursively read all relevant entries."""
-        #TODO remove: print("Reading entry: dataoffset: " + str(self.dataOffset) + ", clusteroffset: " + str(clusterOffset) + ", indexOffset: " + str(indexOffset) + ", offset: " + hex(self.dataOffset + clusterOffset + indexOffset))
         if (self.isLongFileNameEntry(index)):
             self.inputFile.seek(self.getOffset(index))
             (entryOrder, firstChars, attributes, longEntryType, checksum, secondChars, alwaysZero, thirdChars) = struct.unpack_from("<B10sBBB12sH4s",self.inputFile.read(32))
