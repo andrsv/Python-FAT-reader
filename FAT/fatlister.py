@@ -1,7 +1,6 @@
 #!/usr/bin/python3.5
 import argparse
-import FatVbr
-import Fat
+from FAT import  FatVbr, Fat
 import os
 
 class Main():
